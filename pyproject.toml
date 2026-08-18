@@ -1,0 +1,67 @@
+[project]
+name = "longegorefer"
+version = "0.1.0"
+description = "Temporal and spatial grounding baselines for the LongEgoRefer benchmark"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "av>=14.1.0",
+    "google-genai>=1.12.1",
+    "moviepy>=2.2.1",
+    "numpy>=2.0.0",
+    "openai>=2.24.0",
+    "opencv-python>=4.11.0.86",
+    "pillow>=11.0.0",
+    "pydantic>=2.10.0",
+    "python-dotenv>=1.0.1",
+    "torch>=2.6.0",
+    "torchvision>=0.21.0",
+    "tqdm>=4.67.0",
+    "transformers>=4.56.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8.4",
+]
+
+[tool.uv]
+package = false
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu124" }
+torchvision = { index = "pytorch-cu124" }
+
+[tool.ruff]
+line-length = 160
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "A",   # flake8-builtins
+    "B",   # flake8-bugbear
+    "E",   # pycodestyle error
+    "F",   # Pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "PL",  # Pylint
+    "UP",  # pyupgrade
+    "W",   # pycodestyle warning
+]
+ignore = [
+    "E501",     # Line too long
+    "PLC0415",  # import not at top level (backend SDK imports are intentionally lazy)
+    "PLR0917",  # Too many positional arguments
+    "PLR0912",  # Too many branches
+    "PLR0913",  # Too many arguments
+    "PLR0915",  # Too many statements
+    "PLR2004",  # Magic value used in comparison
+]
+
+[tool.ruff.format]
+quote-style = "double"
