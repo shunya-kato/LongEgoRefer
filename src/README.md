@@ -9,6 +9,7 @@ target object in long egocentric videos.
 | `temporal_grounding.py` | Predict the time interval of the described occurrence (Gemini or OpenAI backend). |
 | `spatial_grounding.py` | Predict the object's bounding-box track within the interval (Grounding DINO + SAM2). |
 | `change_video_fps.py` | Preprocessing: re-encode Ego4D videos at a lower fps. |
+| `visualizer.py` | Streamlit app to browse samples (caption, bbox clip, full video). |
 | `metrics.py` | Temporal IoU / vIoU / STIoU / IoU+n and Recall@{0.1, 0.3, 0.5}. |
 | `common.py` | Dataset loading, time parsing, shared constants. |
 
@@ -46,6 +47,21 @@ python src/change_video_fps.py 1 \
 
 Only videos referenced by the dataset are converted; audio is dropped and
 existing outputs are skipped, so the script can be re-run to resume.
+
+## Visualizer
+
+Browse the dataset interactively: pick a sample ID (filterable by id, object
+title, or caption) and inspect the referring expression, metadata, the
+occurrence interval rendered as a clip with the ground-truth boxes drawn, and
+the full source video (playback starts at the occurrence).
+
+```bash
+uv run streamlit run src/visualizer.py -- \
+    --video-dir /path/to/ego4d_data/v1/full_scale
+```
+
+Rendered clips are cached under `--clip-cache-dir` (default
+`outputs/visualizer`). Requires `ffmpeg` for H.264 re-encoding.
 
 ## Temporal grounding
 
