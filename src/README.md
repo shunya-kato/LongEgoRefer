@@ -8,15 +8,17 @@ target object in long egocentric videos.
 |---|---|
 | `temporal_grounding.py` | Predict the time interval of the described occurrence (Gemini or OpenAI backend). |
 | `spatial_grounding.py` | Predict the object's bounding-box track within the interval (Grounding DINO + SAM2). |
+| `change_video_fps.py` | Preprocessing: re-encode Ego4D videos at a lower fps. |
 | `metrics.py` | Temporal IoU / vIoU / STIoU / IoU+n and Recall@{0.1, 0.3, 0.5}. |
 | `common.py` | Dataset loading, time parsing, shared constants. |
 
 ## Setup
 
+The project is managed with [uv](https://docs.astral.sh/uv/):
+
 ```bash
-pip install opencv-python numpy pydantic tqdm python-dotenv \
-    google-genai openai \
-    torch transformers moviepy pillow
+uv sync
+uv run python src/temporal_grounding.py --help
 ```
 
 API keys are read from the environment (or a `.env` file at the repo root):
@@ -26,9 +28,24 @@ API keys are read from the environment (or a `.env` file at the repo root):
 
 Videos are **not** included in this repository; download Ego4D full-length
 videos yourself and point `--video-dir` at a directory laid out as
-`{video_uid}.mp4`. For the Gemini backend, videos re-encoded at a low fps
-(e.g. 1 fps) keep uploads under the Files API size limit; the spatial script
-needs the full-scale (30 fps) videos.
+`{video_uid}.mp4`. The spatial script needs the full-scale (30 fps) videos;
+the temporal script works on low-fps re-encodes (see below).
+
+## Preprocessing: low-fps videos
+
+The Gemini backend uploads whole videos, so re-encode them at a low frame rate
+(e.g. 1 fps) to stay under the Files API size limit; the OpenAI backend also
+benefits from the smaller files. Requires the `ffmpeg` command
+(`--codec h264_nvenc` encodes on an NVIDIA GPU):
+
+```bash
+python src/change_video_fps.py 1 \
+    --video-dir /path/to/ego4d_data/v1/full_scale \
+    --output-dir /path/to/ego4d/fps1
+```
+
+Only videos referenced by the dataset are converted; audio is dropped and
+existing outputs are skipped, so the script can be re-run to resume.
 
 ## Temporal grounding
 
